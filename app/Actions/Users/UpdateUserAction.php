@@ -3,19 +3,17 @@
 namespace App\Actions\Users;
 
 use App\DTOs\User\UserData;
-use App\Enums\UserRole;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 
-class CreateUserAction
+class UpdateUserAction
 {
-    public function execute(UserData $data) : User
+    public function execute( UserData $data, User $user): bool
     {
-        return User::create([
+        return User::update([
             'name' => $data->name,
             'phone' => $data->phone,
             'email' => $data->email,
-            'password' => $data->password,
+            'password' => $data->password ?? $user->password,
             'role' => $data->role,
         ]);
     }

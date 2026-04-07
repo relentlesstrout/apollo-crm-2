@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Users\CreateUserAction;
+use App\Actions\Users\UpdateUserAction;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
@@ -23,9 +26,10 @@ class UserController extends Controller
         return view('users.create');
     }
 
-    public function store(Request $request, CreateUserAction $action)
+    public function store(StoreUserRequest $request, CreateUserAction $action)
     {
-        $user = $action->execute($request->validated);
+        $userDTO = $request->toDTO();
+        $action->execute($userDTO);
 
         redirect()->route('users.index');
     }
@@ -40,12 +44,13 @@ class UserController extends Controller
         return view('users.edit', $id);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateUserRequest $request, UpdateUserAction $action, User $user)
     {
-        $user = User::findOrFail($id);
-        $user->update($request->validated());
+        $userDTO = $request->toDTO();
 
-        redirect()->route('users.index');
+        $action->execute($userDTO, $user);
+
+        redirect()->route('users.show', $user->id)->with('success', 'User updated successfully');
     }
 
     public function destroy($id)

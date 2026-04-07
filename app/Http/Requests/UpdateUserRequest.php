@@ -3,21 +3,17 @@
 namespace App\Http\Requests;
 
 use App\DTOs\User\UserData;
-use App\Enums\UserRole;
-use App\Models\User;
-use App\Rules\UkPhoneNumber;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class StoreUserRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('create', User::class) ?? false;
+        return false;
     }
 
     /**
@@ -28,11 +24,11 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', new UkPhoneNumber],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', Rule::enum(UserRole::class) ],
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string',
+            'email' => 'required|email|unique:users,email,' . $this->user->id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'role' => 'required|in:admin,cleaner',
         ];
     }
 
