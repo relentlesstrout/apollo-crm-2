@@ -16,6 +16,7 @@ class UserSeeder extends Seeder
     {
         User::factory()->create([
             'name' => 'admin1',
+            'phone' => '0786412454',
             'email' => 'admin1@apollo.com',
             'password' => bcrypt('password'),
             'role' => UserRole::Admin,
@@ -23,6 +24,7 @@ class UserSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'cleaner1',
+            'phone' => '0786412454',
             'email' => 'cleaner1@apollo.com',
             'password' => bcrypt('password'),
             'role' => UserRole::Cleaner,
@@ -30,6 +32,7 @@ class UserSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'customer1',
+            'phone' => '0786412454',
             'email' => 'customer1@apollo.com',
             'password' => bcrypt('password'),
             'role' => UserRole::Customer,
