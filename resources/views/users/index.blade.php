@@ -18,7 +18,7 @@
             ]"
         />
     </div>
-    <div class="my-4">
+    <div class="mt-4">
         {{ $users->links() }}
     </div>
 </x-layouts.app>

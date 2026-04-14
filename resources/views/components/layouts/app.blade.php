@@ -8,10 +8,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>Apollo Window Cleaners</title>
 </head>
-<body class="h-full">
+<body class="pb-8">
     <x-navbar/>
-<main class="h-full mx-30">
-    {{ $slot }}
-</main>
+    <main class="h-full mx-30">
+        {{ $slot }}
+    </main>
 </body>
 </html>
