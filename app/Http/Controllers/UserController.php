@@ -15,11 +15,13 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::withTrashed()
+        $users = User::query()
             ->orderBy('id', 'desc')
             ->paginate(20);
 
-        return view('users.index', compact('users'));
+        $props = [];
+
+        return view('users.index', compact('users', 'props'));
     }
 
     public function create()
