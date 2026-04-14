@@ -18,6 +18,7 @@ class UserController extends Controller
         $users = User::withTrashed()
             ->orderBy('id', 'desc')
             ->paginate(20);
+
         return view('users.index', compact('users'));
     }
 
