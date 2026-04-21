@@ -3,8 +3,10 @@
 namespace App\Http\Requests;
 
 use App\DTOs\User\UserData;
+use App\Enums\UserRole;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -28,7 +30,7 @@ class UpdateUserRequest extends FormRequest
             'phone' => 'required|string',
             'email' => 'required|email|unique:users,email,' . $this->user->id,
             'password' => 'nullable|string|min:8|confirmed',
-            'role' => 'required|in:admin,cleaner',
+            'role' => ['required', Rule::enum(UserRole::class) ],
         ];
     }
 

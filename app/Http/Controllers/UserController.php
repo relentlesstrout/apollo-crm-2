@@ -34,17 +34,17 @@ class UserController extends Controller
         $userDTO = $request->toDTO();
         $action->execute($userDTO);
 
-        redirect()->route('users.index');
+        return redirect()->route('users.index');
     }
 
-    public function show($id)
+    public function show(User $user)
     {
-        return view('users.show', $id);
+        return view('users.show', ['user' => $user]);
     }
 
-    public function edit($id)
+    public function edit(User $user)
     {
-        return view('users.edit', $id);
+        return view('users.edit', ['user' => $user]);
     }
 
     public function update(UpdateUserRequest $request, UpdateUserAction $action, User $user)
@@ -53,7 +53,7 @@ class UserController extends Controller
 
         $action->execute($userDTO, $user);
 
-        redirect()->route('users.show', $user->id)->with('success', 'User updated successfully');
+        return redirect()->route('users.show', $user->id)->with('success', 'User updated successfully');
     }
 
     public function destroy($id)

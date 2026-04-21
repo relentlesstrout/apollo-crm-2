@@ -9,7 +9,7 @@ class UpdateUserAction
 {
     public function execute( UserData $data, User $user): bool
     {
-        return User::update([
+        return $user->update([
             'name' => $data->name,
             'phone' => $data->phone,
             'email' => $data->email,
