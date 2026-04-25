@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\InviteController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
