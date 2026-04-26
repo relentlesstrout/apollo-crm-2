@@ -119,7 +119,7 @@ export default function Table({ users, routes }) {
                 />
                 <div>
                     <a href={routes.create} className="bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors duration-150">
-                        Add User
+                        Invite New User
                     </a>
                 </div>
             </div>
