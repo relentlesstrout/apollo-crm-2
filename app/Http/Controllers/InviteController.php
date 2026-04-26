@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Invitations\InviteUserAction;
 use App\Http\Requests\InviteRequest;
 use Illuminate\Http\Request;
+use App\DTOs\Invitation\InvitationData;
 
 class InviteController extends Controller
 {
@@ -15,6 +16,6 @@ class InviteController extends Controller
 
     public function store(InviteRequest $request, InviteUserAction $action)
     {
-        $action->execute($request->email, $request->role, $request->user());
+        $action->execute(InvitationData::fromRequest($request));
     }
 }

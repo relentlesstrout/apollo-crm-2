@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\InviteStatus;
+use App\Enums\UserRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,7 +18,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('token', 64)->unique();
             $table->foreignId('invited_by')->constrained('users')->cascadeOnDelete();
-            $table->enum('role', ['admin', 'cleaner'])->default('cleaner');
+            $table->enum('role', array_column(UserRole::invitable(), 'value'));
+            $table->enum('status', array_column(InviteStatus::cases(), 'value'));
             $table->timestamp('expires_at');
             $table->timestamp('accepted_at')->nullable();
             $table->timestamps();
