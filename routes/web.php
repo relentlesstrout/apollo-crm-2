@@ -19,7 +19,7 @@ Route::get('/login', [LoginController::class, 'show'])->name('login');
 Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 Route::post('/logout', [LoginController::class, 'destroy'])->name('logout')->middleware('auth');
 
-// Admin-only: send invites
+// Admin-only
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/invite', [InviteController::class, 'show'])->name('invite.show');
     Route::post('/invite', [InviteController::class, 'store'])->name('invite.store');

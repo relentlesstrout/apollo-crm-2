@@ -2,7 +2,7 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
             <div class="flex h-full items-center gap-8">
-                <img src="{{ asset('images/logo.png') }}" alt="Apollo CRM" class="h-20 w-auto max-h-full"/>
+                <x-logo/>
                 <div class="hidden sm:flex sm:h-full sm:items-stretch sm:gap-1">
                     <x-nav-link :href="route('dashboard')" :active="request()->is('/')">
                         Dashboard
