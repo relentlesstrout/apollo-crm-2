@@ -17,5 +17,7 @@ class InviteController extends Controller
     public function store(InviteRequest $request, InviteUserAction $action)
     {
         $action->execute(InvitationData::fromRequest($request));
+
+        return redirect()->route('users.index')->with('success', 'Invitation sent successfully');
     }
 }

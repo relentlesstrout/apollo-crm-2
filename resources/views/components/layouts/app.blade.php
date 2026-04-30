@@ -11,6 +11,7 @@
 <body class="pb-8">
     <x-navbar/>
     <main class="h-full mx-30">
+        @include('partials.flash')
         {{ $slot }}
     </main>
 </body>
