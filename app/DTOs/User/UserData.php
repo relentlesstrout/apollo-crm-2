@@ -2,6 +2,8 @@
 
 namespace App\DTOs\User;
 
+use App\Enums\UserRole;
+
 readonly class UserData
 {
     public function __construct(
@@ -9,6 +11,6 @@ readonly class UserData
         public string $phone,
         public string $email,
         public ?string $password = null,
-        public string $role,
+        public UserRole $role,
     ) {}
 }
