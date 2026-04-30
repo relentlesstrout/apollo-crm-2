@@ -78,7 +78,65 @@
             </dl>
         </div>
 
+        @if($user->isCustomer())
+            <div class="bg-white rounded-md border border-slate-200 overflow-hidden mb-4">
+                <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                    <h2 class="text-sm font-semibold text-slate-800">Invoices</h2>
+                    <span class="text-xs text-slate-500">{{ $user->localInvoices->count() }} total</span>
+                </div>
+
+                @if($user->localInvoices->isEmpty())
+                    <div class="px-6 py-8 text-center">
+                        <p class="text-sm text-slate-400">No invoices yet.</p>
+                    </div>
+                @else
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-100">
+                                <th class="px-6 py-3 text-left font-medium text-slate-500">Description</th>
+                                <th class="px-6 py-3 text-right font-medium text-slate-500">Amount</th>
+                                <th class="px-6 py-3 text-right font-medium text-slate-500">Status</th>
+                                <th class="px-6 py-3 text-right font-medium text-slate-500">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach($user->localInvoices as $invoice)
+                                @php
+                                    $statusColours = [
+                                        'draft' => 'bg-slate-100 text-slate-600',
+                                        'sent'  => 'bg-amber-100 text-amber-700',
+                                        'paid'  => 'bg-emerald-100 text-emerald-700',
+                                        'void'  => 'bg-red-100 text-red-600',
+                                    ];
+                                    $statusBadge = $statusColours[$invoice->status->value] ?? $statusColours['draft'];
+                                @endphp
+                                <tr>
+                                    <td class="px-6 py-3 text-slate-800">{{ $invoice->description }}</td>
+                                    <td class="px-6 py-3 text-right text-slate-800">{{ $invoice->formattedAmount() }}</td>
+                                    <td class="px-6 py-3 text-right">
+                                        <span class="text-xs font-medium px-2 py-0.5 rounded-full {{ $statusBadge }}">
+                                            {{ $invoice->status->label() }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-3 text-right text-slate-500">{{ $invoice->created_at->format('j M Y') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+            </div>
+        @endif
+
         <div class="flex items-center justify-end gap-2">
+            @if($user->isCustomer())
+                <form method="POST" action="{{ route('invoices.store', $user) }}">
+                    @csrf
+                    <button type="submit"
+                            class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors duration-150">
+                        Send Invoice
+                    </button>
+                </form>
+            @endif
             <a href="{{ route('users.edit', $user) }}"
                class="bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors duration-150">
                 Edit

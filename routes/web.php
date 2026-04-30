@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\InviteController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
@@ -25,5 +27,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/invite', [InviteController::class, 'store'])->name('invite.store');
 
     Route::resource('users', UserController::class);
+    Route::post('/users/{user}/invoice', [InvoiceController::class, 'store'])->name('invoices.store');
 });
 
+// Public checkout routes (signed URLs, no auth required)
+Route::get('/checkout/{invoice}', [CheckoutController::class, 'show'])->name('checkout.show')->middleware('signed');
+Route::get('/checkout/{invoice}/success', [CheckoutController::class, 'success'])->name('checkout.success');

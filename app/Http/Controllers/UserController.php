@@ -7,11 +7,8 @@ use App\Actions\Users\UpdateUserAction;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Http\Request;
 
 class UserController extends Controller
-
 {
     public function index()
     {
@@ -38,6 +35,10 @@ class UserController extends Controller
 
     public function show(User $user)
     {
+        if ($user->isCustomer()) {
+            $user->load(['localInvoices' => fn ($query) => $query->orderBy('created_at', 'desc')]);
+        }
+
         return view('users.show', ['user' => $user]);
     }
 

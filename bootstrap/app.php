@@ -13,11 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias(['role' => RoleMiddleware::class]);
+        $middleware->trustProxies(at: '*');
     })
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->preventRequestForgery(except: [
+            'stripe/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
-
