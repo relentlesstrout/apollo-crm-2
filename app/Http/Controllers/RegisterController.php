@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Invitations\CheckValidRegistrationAction;
 use App\Actions\Invitations\RegisterUserAction;
 use App\Actions\Users\CreateUserAction;
+use App\Enums\InviteStatus;
 use App\Enums\UserRole;
 use App\Http\Requests\RegisterRequest;
 use App\Models\Invitation;
@@ -30,7 +31,7 @@ class RegisterController extends Controller
         try {
             $invitation = CheckValidRegistrationAction::execute($request, $token);
             $user = $action->execute($request->toDTO());
-            $invitation->update(['accepted_at' => now()]);
+            $invitation->update(['accepted_at' => now(), 'status' => InviteStatus::Accepted]);
             Auth::login($user);
             return redirect()->route('dashboard')->with('success', 'Registration successful!');
 

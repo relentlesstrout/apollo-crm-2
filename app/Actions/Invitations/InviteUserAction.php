@@ -3,9 +3,9 @@
 namespace App\Actions\Invitations;
 
 use App\DTOs\Invitation\InvitationData;
+use App\Enums\InviteStatus;
 use App\Mail\InvitationMail;
 use App\Models\Invitation;
-use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 
 class InviteUserAction
@@ -13,17 +13,17 @@ class InviteUserAction
     public function execute(InvitationData $data): void
     {
         Invitation::where('email', $data->email)
-            ->where('status', 'pending')
-            ->update(['status' => 'expired']);
+            ->where('status', InviteStatus::Pending)
+            ->update(['status' => InviteStatus::Expired]);
 
-        $invitation = Invitation::updateOrCreate(
-            ['email' => $data->email],
+        $invitation = Invitation::create(
             [
+                'email' => $data->email,
                 'token' => bin2hex(random_bytes(32)),
                 'role' => $data->role,
                 'invited_by' => $data->invitedById,
                 'accepted_at' => null,
-                'status' => 'pending',
+                'status' => InviteStatus::Pending,
                 'expires_at' => now()->addDays(7),
             ]
         );

@@ -25,7 +25,7 @@ class InviteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email',
+            'email' => ['required', 'email', Rule::unique('users', 'email')],
             'role' => ['required', Rule::enum(UserRole::class)]
         ];
     }
