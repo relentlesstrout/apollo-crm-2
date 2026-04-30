@@ -9,7 +9,7 @@
                 <p class="text-m text-slate-500 text-center">You've been invited to join Apollo</p>
             </div>
 
-            <form method="POST" action="{{ route('register.store', $token) }}">
+            <form method="POST" action="{{ route('register.store', $invitation->token) }}">
                 @csrf
 
                 {{-- Invitation token --}}
@@ -97,8 +97,13 @@
                             Create Account
                         </button>
                     </div>
-
+                    @error('role')
+                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                    @enderror
                 </div>
+                @foreach ($errors->all() as $error)
+                    <span class="text-red-500 text-xs mt-1">{{ $error }}</span>
+                @endforeach
             </form>
         </div>
     </div>

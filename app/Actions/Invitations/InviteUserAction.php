@@ -16,7 +16,7 @@ class InviteUserAction
             ->where('status', 'pending')
             ->update(['status' => 'expired']);
 
-        $invitation = Invitation::updateOrCreate([
+        $invitation = Invitation::updateOrCreate(
             ['email' => $data->email],
             [
                 'token' => bin2hex(random_bytes(32)),
@@ -26,7 +26,7 @@ class InviteUserAction
                 'status' => 'pending',
                 'expires_at' => now()->addDays(7),
             ]
-        ]);
+        );
 
         Mail::to($data->email)->send(new InvitationMail($invitation));
     }

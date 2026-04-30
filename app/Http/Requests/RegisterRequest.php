@@ -32,14 +32,14 @@ class RegisterRequest extends FormRequest
         ];
     }
 
-    public function toDTO(Invitation $invitation): UserData
+    public function toDTO(): UserData
     {
         return new UserData(
             name: $this->input('name'),
             phone: $this->input('phone'),
-            email: $invitation->email,
+            email: $this->input('email'),
             password: $this->input('password'),
-            role: $invitation->role,
+            role: $this->input('role'),
         );
     }
 }
