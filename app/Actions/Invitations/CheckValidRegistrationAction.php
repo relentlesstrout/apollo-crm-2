@@ -2,27 +2,38 @@
 
 namespace App\Actions\Invitations;
 
-use App\Enums\UserRole;
 use App\Http\Requests\RegisterRequest;
 use App\Models\Invitation;
+use InvalidArgumentException;
 
 class CheckValidRegistrationAction
 {
-    public static function execute(RegisterRequest $request, string $token)
+    public static function execute(RegisterRequest $request, string $token): Invitation
     {
-        $invitation = Invitation::where('token', $token)
-            ->where('expires_at', '>', now()->format('Y-m-d H:i:s'))
+        $invitation = Invitation::query()
+            ->where('token', $token)
+            ->where('expires_at', '>', now())
             ->whereNull('accepted_at')
-            ->firstOrFail();
+            ->first();
+
+        if (! $invitation) {
+            throw new InvalidArgumentException(
+                'Invalid, expired, or already accepted invitation.'
+            );
+        }
 
         if ($invitation->email !== $request->email) {
-            return redirect()->back()->withErrors(['email' => 'The email does not match the invitation.']);
+            throw new InvalidArgumentException(
+                'The email does not match the invitation.'
+            );
         }
 
         if ($invitation->role->value !== $request->role) {
-            return redirect()->back()->withErrors(['role' => 'The role does not match the invitation.']);
+            throw new InvalidArgumentException(
+                'The role does not match the invitation.'
+            );
         }
+
         return $invitation;
     }
-
 }

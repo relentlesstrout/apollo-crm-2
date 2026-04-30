@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class RegisterController extends Controller
 {
@@ -26,18 +27,16 @@ class RegisterController extends Controller
 
     public function store (RegisterRequest $request, RegisterUserAction $action, string $token)
     {
-        $invitation = CheckValidRegistrationAction::execute($request, $token);
-        if (!$invitation instanceof Model) {
-            return $invitation;
+        try {
+            $invitation = CheckValidRegistrationAction::execute($request, $token);
+            $user = $action->execute($request->toDTO());
+            $invitation->update(['accepted_at' => now()]);
+            Auth::login($user);
+            return redirect()->route('dashboard')->with('success', 'Registration successful!');
+
+        } catch (ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors());
         }
-
-        $user = $action->execute($request->toDTO());
-
-        $invitation->update(['accepted_at' => now()]);
-
-        Auth::login($user);
-
-        return redirect()->route('dashboard')->with('success', 'Registration successful!');
     }
 
 }
