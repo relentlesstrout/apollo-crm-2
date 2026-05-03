@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\DTOs\User\UserData;
+use App\Enums\UserRole;
 use App\Models\Invitation;
 use App\Rules\UkPhoneNumber;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -39,7 +40,7 @@ class RegisterRequest extends FormRequest
             phone: $this->input('phone'),
             email: $this->input('email'),
             password: $this->input('password'),
-            role: $this->input('role'),
+            role: UserRole::from($this->input('role')),
         );
     }
 }
