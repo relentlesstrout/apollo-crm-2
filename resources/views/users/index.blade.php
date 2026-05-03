@@ -14,7 +14,7 @@
                     'show' => route('users.show', ['user' =>'__ID__']),
                     'edit' => route('users.edit', ['user' =>'__ID__']),
                     'destroy' => route('users.destroy', ['user' =>'__ID__']),
-                    'create' => route('users.create')
+                    'create' => route('invite.show')
                 ]
             ]"
         />

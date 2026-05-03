@@ -31,8 +31,7 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request, CreateUserAction $action)
     {
-        $userDTO = $request->toDTO();
-        $action->execute($userDTO);
+        $action->execute($request->toDTO());
 
         return redirect()->route('users.index');
     }
