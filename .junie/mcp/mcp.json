@@ -1,9 +1,9 @@
 {
     "mcpServers": {
         "laravel-boost": {
-            "command": "/Users/matthewworrall/.config/herd-lite/bin/php",
+            "command": "/usr/bin/php",
             "args": [
-                "/Users/matthewworrall/apollo-crm-2/artisan",
+                "artisan",
                 "boost:mcp"
             ]
         }

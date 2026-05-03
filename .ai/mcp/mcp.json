@@ -1,9 +1,9 @@
 {
     "mcpServers": {
         "laravel-boost": {
-            "command": "vendor/bin/sail",
+            "command": "/usr/bin/php",
             "args": [
-                "artisan",
+                "/home/relentlesstrout/PhpstormProjects/apollo-crm-2/artisan",
                 "boost:mcp"
             ]
         }
