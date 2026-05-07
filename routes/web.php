@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
@@ -25,5 +26,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/invite', [InviteController::class, 'store'])->name('invite.store');
 
     Route::resource('users', UserController::class);
+
+    Route::resource('customers', CustomerController::class)->except('destroy');
+    Route::post('customers/{customer}/portal', [CustomerController::class, 'grantPortalAccess'])->name('customers.portal.grant');
+    Route::post('customers/{customer}/portal/resend', [CustomerController::class, 'resendPortalInvite'])->name('customers.portal.resend');
 });
 
