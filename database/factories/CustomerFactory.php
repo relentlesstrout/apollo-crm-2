@@ -18,7 +18,7 @@ class CustomerFactory extends Factory
         return [
             'name' => fake()->name(),
             'phone' => fake()->phoneNumber(),
-            'email' => fake()->optional(0.7)->unique()->safeEmail(),
+            'email' => fake()->boolean(70) ? fake()->unique()->safeEmail() : null,
             'status' => CustomerStatus::Active,
             'user_id' => null,
         ];

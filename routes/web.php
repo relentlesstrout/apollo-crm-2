@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('dashboard');
-})->name('dashboard');
+})->name('dashboard')->middleware('auth');
 
 // Invitation-based registration
 Route::get('/register/{token}', [RegisterController::class, 'show'])->name('register.show');
@@ -31,4 +31,3 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('customers/{customer}/portal', [CustomerController::class, 'grantPortalAccess'])->name('customers.portal.grant');
     Route::post('customers/{customer}/portal/resend', [CustomerController::class, 'resendPortalInvite'])->name('customers.portal.resend');
 });
-
