@@ -3,6 +3,7 @@
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,10 @@ Route::post('/register/{token}', [RegisterController::class, 'store'])->name('re
 Route::get('/login', [LoginController::class, 'show'])->name('login');
 Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 Route::post('/logout', [LoginController::class, 'destroy'])->name('logout')->middleware('auth');
+
+// Password reset
+Route::get('password/reset/{token}', [PasswordResetController::class, 'show'])->name('password.reset');
+Route::post('password/reset', [PasswordResetController::class, 'store'])->name('password.update');
 
 // Admin-only
 Route::middleware(['auth', 'role:admin'])->group(function () {
