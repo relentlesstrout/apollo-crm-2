@@ -12,6 +12,9 @@
                     <x-nav-link :href="route('users.index')" :active="request()->is('users*')">
                         Manage Accounts
                     </x-nav-link>
+                    <x-nav-link :href="route('customers.index')" :active="request()->is('customers*')">
+                        Customers
+                    </x-nav-link>
                 </div>
             </div>
 

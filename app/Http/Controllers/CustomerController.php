@@ -10,31 +10,14 @@ use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\View\View;
 
 class CustomerController extends Controller
 {
-    public function index(Request $request): View
+    public function index(): View
     {
-        $customers = Customer::query()
-            ->when($request->string('search')->isNotEmpty(), function ($query) use ($request) {
-                $search = $request->string('search')->toString();
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                });
-            })
-            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->input('status')))
-            ->orderBy('id', 'desc')
-            ->paginate(20)
-            ->withQueryString();
-
-        return view('customers.index', [
-            'customers' => $customers,
-            'statuses' => CustomerStatus::cases(),
-        ]);
+        return view('customers.index');
     }
 
     public function create(): View
