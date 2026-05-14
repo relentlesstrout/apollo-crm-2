@@ -79,110 +79,14 @@
             </a>
         </div>
 
-        {{-- Properties --}}
-        @php
-            $activeProps    = $customer->properties->where('status', \App\Enums\PropertyStatus::Active)->values();
-            $pausedProps    = $customer->properties->where('status', \App\Enums\PropertyStatus::Paused)->values();
-            $cancelledProps = $customer->properties->where('status', \App\Enums\PropertyStatus::Cancelled)->values();
-            $visibleProps   = $activeProps->merge($pausedProps);
-        @endphp
-
+        {{-- Properties placeholder --}}
         <div class="bg-white rounded-md border border-slate-200 overflow-hidden mb-4">
-            <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+            <div class="bg-slate-50 border-b border-slate-200 px-6 py-4">
                 <h2 class="text-sm font-semibold text-slate-700">Properties</h2>
-                <a href="{{ route('customers.properties.create', $customer) }}"
-                   class="bg-sky-500 hover:bg-sky-600 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors duration-150">
-                    Add Property
-                </a>
             </div>
-
-            @if ($visibleProps->isEmpty() && $cancelledProps->isEmpty())
-                <div class="px-6 py-8 text-center">
-                    <p class="text-sm text-slate-400">No properties yet.</p>
-                </div>
-            @else
-                <div x-data="{ showCancelled: false }">
-
-                    @if ($visibleProps->isEmpty())
-                        <div class="px-6 py-4 text-center">
-                            <p class="text-sm text-slate-400">No active or paused properties.</p>
-                        </div>
-                    @else
-                        <div class="divide-y divide-slate-100">
-                            @foreach ($visibleProps as $property)
-                                @php
-                                    $propBadge = match ($property->status) {
-                                        \App\Enums\PropertyStatus::Active => 'bg-emerald-100 text-emerald-700 border border-emerald-200',
-                                        \App\Enums\PropertyStatus::Paused => 'bg-amber-100 text-amber-700 border border-amber-200',
-                                        default                           => 'bg-red-100 text-red-700 border border-red-200',
-                                    };
-                                @endphp
-                                <div class="px-6 py-4 flex items-center justify-between gap-4">
-                                    <div>
-                                        <p class="text-sm font-medium text-slate-800">{{ $property->house }}, {{ $property->street }}</p>
-                                        <p class="text-xs text-slate-500">
-                                            @if ($property->area){{ $property->area }}, @endif{{ $property->postcode }}
-                                        </p>
-                                    </div>
-                                    <div class="flex items-center gap-2 shrink-0">
-                                        <span class="text-xs font-medium px-2.5 py-0.5 rounded-full {{ $propBadge }}">
-                                            {{ $property->status->label() }}
-                                        </span>
-                                        <a href="{{ route('properties.show', $property) }}"
-                                           class="bg-sky-500 hover:bg-sky-600 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors duration-150">
-                                            View
-                                        </a>
-                                        <a href="{{ route('properties.edit', $property) }}"
-                                           class="bg-white hover:bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-md border border-slate-200 transition-colors duration-150">
-                                            Edit
-                                        </a>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    @if ($cancelledProps->isNotEmpty())
-                        <div class="px-6 py-3 border-t border-slate-100 bg-slate-50/50">
-                            <button @click="showCancelled = !showCancelled"
-                                    class="text-xs text-slate-500 hover:text-slate-700 flex items-center gap-1">
-                                <svg class="w-3 h-3 transition-transform duration-150" :class="showCancelled ? 'rotate-180' : ''"
-                                     fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                </svg>
-                                <span x-text="showCancelled ? 'Hide cancelled' : 'Show {{ $cancelledProps->count() }} cancelled'"></span>
-                            </button>
-                        </div>
-
-                        <div x-show="showCancelled" class="divide-y divide-slate-100">
-                            @foreach ($cancelledProps as $property)
-                                <div class="px-6 py-4 flex items-center justify-between gap-4 bg-slate-50/30">
-                                    <div>
-                                        <p class="text-sm font-medium text-slate-600">{{ $property->house }}, {{ $property->street }}</p>
-                                        <p class="text-xs text-slate-400">
-                                            @if ($property->area){{ $property->area }}, @endif{{ $property->postcode }}
-                                        </p>
-                                    </div>
-                                    <div class="flex items-center gap-2 shrink-0">
-                                        <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200">
-                                            Cancelled
-                                        </span>
-                                        <a href="{{ route('properties.show', $property) }}"
-                                           class="bg-sky-500 hover:bg-sky-600 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors duration-150">
-                                            View
-                                        </a>
-                                        <a href="{{ route('properties.edit', $property) }}"
-                                           class="bg-white hover:bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-md border border-slate-200 transition-colors duration-150">
-                                            Edit
-                                        </a>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                </div>
-            @endif
+            <div class="px-6 py-8 text-center">
+                <p class="text-sm text-slate-400">Properties coming soon.</p>
+            </div>
         </div>
 
         {{-- Invoices placeholder --}}
