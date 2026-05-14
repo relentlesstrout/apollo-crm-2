@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Actions\Customers\CreateCustomerAction;
 use App\Actions\Customers\GrantCustomerPortalAccessAction;
 use App\Actions\Customers\UpdateCustomerAction;
+use App\Actions\Properties\CreatePropertyAction;
+use App\DTOs\Property\PropertyData;
 use App\Enums\CustomerStatus;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
@@ -25,9 +27,11 @@ class CustomerController extends Controller
         return view('customers.create');
     }
 
-    public function store(StoreCustomerRequest $request, CreateCustomerAction $action): RedirectResponse
+    public function store(StoreCustomerRequest $request, CreateCustomerAction $createCustomerAction, CreatePropertyAction $createPropertyAction): RedirectResponse
     {
-        $customer = $action->execute($request->toDTO());
+        $customer = $createCustomerAction->execute($request->toCustomerDTO());
+
+        $createPropertyAction->execute($customer, $request->toPropertyDTO());
 
         return redirect()->route('customers.show', $customer)->with('success', 'Customer created successfully.');
     }

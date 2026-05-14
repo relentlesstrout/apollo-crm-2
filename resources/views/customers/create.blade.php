@@ -71,6 +71,13 @@
                         @enderror
                     </div>
 
+                    <div class="bg-slate-50 border-b border-slate-200 px-6 py-5">
+                        <h1 class="text-lg font-semibold text-slate-800">Add Property</h1>
+                        <p class="text-sm text-slate-500">Add the Customers first property</p>
+                    </div>
+
+                    <x-property-form-fields/>
+
                     <div class="px-6 py-4">
                         <label class="flex items-center gap-3 cursor-pointer">
                             <input
