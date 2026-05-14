@@ -3,25 +3,28 @@
 namespace App\Actions\Customers;
 
 use App\DTOs\Customer\CustomerData;
+use App\DTOs\Property\PropertyData;
 use App\Enums\CustomerStatus;
+use App\Enums\PropertyStatus;
 use App\Models\Customer;
+use App\Models\Property;
 
-class CreateCustomerAction
+readonly class CreateCustomerAction
 {
     public function __construct(
-        private readonly GrantCustomerPortalAccessAction $grantPortalAccess,
+        private GrantCustomerPortalAccessAction $grantPortalAccess,
     ) {}
 
-    public function execute(CustomerData $data): Customer
+    public function execute(CustomerData $customerData): Customer
     {
         $customer = Customer::create([
-            'name' => $data->name,
-            'phone' => $data->phone,
-            'email' => $data->email,
+            'name' => $customerData->name,
+            'phone' => $customerData->phone,
+            'email' => $customerData->email,
             'status' => CustomerStatus::Active,
         ]);
 
-        if ($data->inviteToPortal && $data->email) {
+        if ($customerData->inviteToPortal && $customerData->email) {
             $this->grantPortalAccess->execute($customer);
         }
 
