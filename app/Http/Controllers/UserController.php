@@ -48,9 +48,7 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, UpdateUserAction $action, User $user)
     {
-        $userDTO = $request->toDTO();
-
-        $action->execute($userDTO, $user);
+        $action->execute($request->toDTO(), $user);
 
         return redirect()->route('users.show', $user->id)->with('success', 'User updated successfully');
     }
