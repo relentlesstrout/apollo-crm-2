@@ -4,9 +4,7 @@ namespace Tests\Unit\Actions\Customers;
 
 use App\Actions\Customers\UpdateCustomerAction;
 use App\DTOs\Customer\CustomerData;
-use App\Enums\CustomerStatus;
 use App\Models\Customer;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -29,7 +27,6 @@ class UpdateCustomerActionTest extends TestCase
             'name'   => 'Old Name',
             'phone'  => '0000000000',
             'email'  => 'old@example.com',
-            'status' => CustomerStatus::Active,
         ]);
 
         $this->action->execute($this->makeCustomerData(
@@ -43,7 +40,6 @@ class UpdateCustomerActionTest extends TestCase
             'name'   => 'New Name',
             'phone'  => '1111111111',
             'email'  => 'new@example.com',
-            'status' => CustomerStatus::Active,
         ]);
     }
 
@@ -69,59 +65,6 @@ class UpdateCustomerActionTest extends TestCase
         ]);
     }
 
-    public function test_it_soft_deletes_the_user_when_status_changes_to_cancelled(): void
-    {
-        $customer = Customer::factory()->withPortalAccess()->create([
-            'status' => CustomerStatus::Active,
-        ]);
-        $userId = $customer->user_id;
-
-        $this->action->execute(
-            $this->makeCustomerData(status: CustomerStatus::Cancelled),
-            $customer,
-        );
-
-        $this->assertSoftDeleted('users', ['id' => $userId]);
-        $this->assertDatabaseHas('customers', [
-            'id'     => $customer->id,
-            'status' => CustomerStatus::Cancelled,
-        ]);
-    }
-
-    public function test_it_does_not_delete_the_user_when_already_cancelled(): void
-    {
-        $customer = Customer::factory()->withPortalAccess()->cancelled()->create();
-        $userId = $customer->user_id;
-
-        $this->action->execute(
-            $this->makeCustomerData(status: CustomerStatus::Cancelled),
-            $customer,
-        );
-
-        $this->assertDatabaseHas('users', [
-            'id'         => $userId,
-            'deleted_at' => null,
-        ]);
-    }
-
-    public function test_it_does_not_throw_when_cancelling_a_customer_with_no_portal_user(): void
-    {
-        $customer = Customer::factory()->create([
-            'status'  => CustomerStatus::Active,
-            'user_id' => null,
-        ]);
-
-        $this->action->execute(
-            $this->makeCustomerData(status: CustomerStatus::Cancelled),
-            $customer,
-        );
-
-        $this->assertDatabaseHas('customers', [
-            'id'     => $customer->id,
-            'status' => CustomerStatus::Cancelled,
-        ]);
-    }
-
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
@@ -130,14 +73,12 @@ class UpdateCustomerActionTest extends TestCase
         string $name = 'Test Customer',
         string $phone = '0786412454',
         ?string $email = 'customer@example.com',
-        CustomerStatus $status = CustomerStatus::Active,
         bool $inviteToPortal = false,
     ): CustomerData {
         return new CustomerData(
             name:           $name,
             phone:          $phone,
             email:          $email,
-            status:         $status,
             inviteToPortal: $inviteToPortal,
         );
     }

@@ -22,9 +22,7 @@ class CustomerController extends Controller
 
     public function create(): View
     {
-        return view('customers.create', [
-            'statuses' => CustomerStatus::cases(),
-        ]);
+        return view('customers.create');
     }
 
     public function store(StoreCustomerRequest $request, CreateCustomerAction $action): RedirectResponse
@@ -36,14 +34,15 @@ class CustomerController extends Controller
 
     public function show(Customer $customer): View
     {
-        return view('customers.show', ['customer' => $customer]);
+        return view('customers.show', [
+            'customer' => $customer
+        ]);
     }
 
     public function edit(Customer $customer): View
     {
         return view('customers.edit', [
             'customer' => $customer,
-            'statuses' => CustomerStatus::cases(),
         ]);
     }
 

@@ -3,6 +3,7 @@
 namespace App\Actions\Customers;
 
 use App\DTOs\Customer\CustomerData;
+use App\Enums\CustomerStatus;
 use App\Models\Customer;
 
 class CreateCustomerAction
@@ -17,7 +18,7 @@ class CreateCustomerAction
             'name' => $data->name,
             'phone' => $data->phone,
             'email' => $data->email,
-            'status' => $data->status,
+            'status' => CustomerStatus::Active,
         ]);
 
         if ($data->inviteToPortal && $data->email) {

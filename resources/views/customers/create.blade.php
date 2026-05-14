@@ -72,24 +72,6 @@
                     </div>
 
                     <div class="px-6 py-4">
-                        <label for="status" class="block text-sm font-medium text-slate-500 mb-1">Status</label>
-                        <select
-                            id="status"
-                            name="status"
-                            class="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 @error('status') border-red-300 focus:ring-red-500 focus:border-red-500 @enderror"
-                        >
-                            @foreach ($statuses as $status)
-                                <option value="{{ $status->value }}" {{ old('status', \App\Enums\CustomerStatus::Active->value) === $status->value ? 'selected' : '' }}>
-                                    {{ $status->label() }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('status')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="px-6 py-4">
                         <label class="flex items-center gap-3 cursor-pointer">
                             <input
                                 type="checkbox"
