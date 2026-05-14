@@ -82,14 +82,12 @@ class CreateCustomerActionTest extends TestCase
         string $name = 'Test Customer',
         string $phone = '0786412454',
         ?string $email = 'customer@example.com',
-        CustomerStatus $status = CustomerStatus::Active,
         bool $inviteToPortal = false,
     ): CustomerData {
         return new CustomerData(
             name:           $name,
             phone:          $phone,
             email:          $email,
-            status:         $status,
             inviteToPortal: $inviteToPortal,
         );
     }

@@ -3,7 +3,6 @@
 namespace App\Actions\Customers;
 
 use App\DTOs\Customer\CustomerData;
-use App\Enums\CustomerStatus;
 use App\Models\Customer;
 
 class UpdateCustomerAction
@@ -18,15 +17,11 @@ class UpdateCustomerAction
             ]);
         }
 
-        if ($data->status === CustomerStatus::Cancelled && $customer->status !== CustomerStatus::Cancelled) {
-            $customer->user?->delete();
-        }
 
         $customer->update([
             'name' => $data->name,
             'phone' => $data->phone,
             'email' => $data->email,
-            'status' => $data->status,
         ]);
     }
 }

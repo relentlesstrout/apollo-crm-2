@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\DTOs\Customer\CustomerData;
-use App\Enums\CustomerStatus;
 use App\Models\Customer;
 use App\Rules\UkPhoneNumber;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -29,7 +28,6 @@ class UpdateCustomerRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', new UkPhoneNumber],
             'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique('customers')->ignore($customer->id)],
-            'status' => ['required', Rule::enum(CustomerStatus::class)],
         ];
     }
 
@@ -39,7 +37,6 @@ class UpdateCustomerRequest extends FormRequest
             name: $this->string('name')->toString(),
             phone: $this->string('phone')->toString(),
             email: $this->input('email'),
-            status: CustomerStatus::from($this->input('status')),
         );
     }
 }

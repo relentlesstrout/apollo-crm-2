@@ -27,13 +27,6 @@ new class extends Component {
             })
             ->paginate(20);
     }
-
-    public function updateStatus(Customer $customer, string $status): void
-    {
-        $this->authorize('update', $customer);
-
-        $customer->update(['status' => CustomerStatus::from($status)]);
-    }
 };
 ?>
 
@@ -111,25 +104,6 @@ new class extends Component {
                                 >
                                     Edit
                                 </a>
-                                @if ($customer->status === CustomerStatus::Active)
-                                    <button wire:click="updateStatus({{ $customer->id }}, 'paused')" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 text-sm font-medium px-4 py-2 rounded-md border border-yellow-200 transition-colors duration-150">
-                                        Pause
-                                    </button>
-                                    <button wire:click="updateStatus({{ $customer->id }}, 'cancelled')" class="bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium px-4 py-2 rounded-md border border-red-200 transition-colors duration-150">
-                                        Cancel
-                                    </button>
-                                @elseif ($customer->status === CustomerStatus::Paused)
-                                    <button wire:click="updateStatus({{ $customer->id }}, 'active')" class="bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium px-4 py-2 rounded-md border border-green-200 transition-colors duration-150">
-                                        Reactivate
-                                    </button>
-                                    <button wire:click="updateStatus({{ $customer->id }}, 'cancelled')" class="bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium px-4 py-2 rounded-md border border-red-200 transition-colors duration-150">
-                                        Cancel
-                                    </button>
-                                @elseif ($customer->status === CustomerStatus::Cancelled)
-                                    <button wire:click="updateStatus({{ $customer->id }}, 'active')" class="bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium px-4 py-2 rounded-md border border-green-200 transition-colors duration-150">
-                                        Reactivate
-                                    </button>
-                                @endif
                             </div>
                         </td>
                     </tr>

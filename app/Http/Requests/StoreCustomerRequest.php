@@ -3,12 +3,10 @@
 namespace App\Http\Requests;
 
 use App\DTOs\Customer\CustomerData;
-use App\Enums\CustomerStatus;
 use App\Models\Customer;
 use App\Rules\UkPhoneNumber;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreCustomerRequest extends FormRequest
 {
@@ -26,7 +24,6 @@ class StoreCustomerRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', new UkPhoneNumber],
             'email' => ['nullable', 'string', 'email', 'max:255', 'unique:customers'],
-            'status' => ['required', Rule::enum(CustomerStatus::class)],
             'invite_to_portal' => ['boolean'],
         ];
     }
@@ -37,7 +34,6 @@ class StoreCustomerRequest extends FormRequest
             name: $this->string('name')->toString(),
             phone: $this->string('phone')->toString(),
             email: $this->input('email'),
-            status: CustomerStatus::from($this->input('status')),
             inviteToPortal: $this->boolean('invite_to_portal'),
         );
     }
