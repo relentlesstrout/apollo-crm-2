@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Actions\Properties;
 
+use App\Actions\Customers\RecomputeCustomerStatusAction;
 use App\Actions\Properties\UpdatePropertyAction;
 use App\DTOs\Property\PropertyData;
 use App\Enums\PropertyStatus;
@@ -19,7 +20,7 @@ class UpdatePropertyActionTest extends TestCase
     {
         parent::setUp();
 
-        $this->action = new UpdatePropertyAction;
+        $this->action = new UpdatePropertyAction(new RecomputeCustomerStatusAction);
     }
 
     public function test_it_updates_a_property(): void

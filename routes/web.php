@@ -41,8 +41,5 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('customers.properties', PropertyController::class)
         ->shallow()
         ->only(['create', 'store', 'show', 'edit', 'update']);
-    Route::post('properties/{property}/pause', [PropertyController::class, 'pause'])->name('properties.pause');
-    Route::post('properties/{property}/resume', [PropertyController::class, 'resume'])->name('properties.resume');
-    Route::post('properties/{property}/cancel', [PropertyController::class, 'cancel'])->name('properties.cancel');
-    Route::post('properties/{property}/reactivate', [PropertyController::class, 'reactivate'])->name('properties.reactivate');
+    Route::post('properties/{property}/status', [PropertyController::class, 'status'])->name('properties.status');
 });

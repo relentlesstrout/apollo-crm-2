@@ -8,7 +8,7 @@ use App\Models\Customer;
 
 class RecomputeCustomerStatusAction
 {
-    public static function execute(Customer $customer): void
+    public function execute(Customer $customer): void
     {
         $properties = $customer->properties;
 
