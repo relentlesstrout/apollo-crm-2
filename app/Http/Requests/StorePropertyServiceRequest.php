@@ -20,7 +20,7 @@ class StorePropertyServiceRequest extends FormRequest
     {
         return [
             'service_id' => ['required', 'integer', 'exists:services,id'],
-            'price' => ['required', 'integer', 'min:1'],
+            'price' => ['required', 'numeric', 'min:0.01'],
             'description' => ['nullable', 'string'],
             'effective_from' => ['required', 'date'],
             'effective_to' => ['nullable', 'date', 'after:effective_from'],
@@ -31,7 +31,7 @@ class StorePropertyServiceRequest extends FormRequest
     {
         return new PropertyServiceData(
             serviceId: $this->integer('service_id'),
-            price: $this->integer('price'),
+            price: (int) round($this->float('price') * 100),
             description: $this->string('description')->toString() ?: null,
             effectiveFrom: $this->string('effective_from')->toString(),
             effectiveTo: $this->string('effective_to')->toString() ?: null,

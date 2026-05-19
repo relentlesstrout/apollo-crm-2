@@ -8,13 +8,17 @@ use App\Http\Requests\StorePropertyServiceRequest;
 use App\Http\Requests\UpdatePropertyServiceRequest;
 use App\Models\Property;
 use App\Models\PropertyService;
+use App\Models\Service;
 use Illuminate\Http\RedirectResponse;
 
 class PropertyServiceController extends Controller
 {
     public function create(Property $property)
     {
-        return view('property-services.create', ['property' => $property]);
+        return view('property-services.create', [
+            'property' => $property,
+            'services' => Service::orderBy('name')->get(),
+        ]);
     }
 
     public function store(Property $property, StorePropertyServiceRequest $request, CreatePropertyServiceAction $action): RedirectResponse
@@ -26,7 +30,10 @@ class PropertyServiceController extends Controller
 
     public function edit(PropertyService $propertyService)
     {
-        return view('property-services.edit', ['propertyService' => $propertyService]);
+        return view('property-services.edit', [
+            'propertyService' => $propertyService,
+            'services' => Service::orderBy('name')->get(),
+        ]);
     }
 
     public function update(UpdatePropertyServiceRequest $request, UpdatePropertyServiceAction $action, PropertyService $propertyService): RedirectResponse
