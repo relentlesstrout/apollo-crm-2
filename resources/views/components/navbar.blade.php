@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('properties.index')" :active="request()->is('properties*')">
                         Properties
                     </x-nav-link>
+                    <x-nav-link :href="route('services.index')" :active="request()->is('services*')">
+                        Services
+                    </x-nav-link>
                 </div>
             </div>
 
