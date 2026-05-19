@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +33,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/invite', [InviteController::class, 'store'])->name('invite.store');
 
     Route::resource('users', UserController::class);
+    Route::resource('services', ServiceController::class)->except('show');
 
     Route::resource('customers', CustomerController::class)->except('destroy');
     Route::post('customers/{customer}/portal', [CustomerController::class, 'grantPortalAccess'])->name('customers.portal.grant');
