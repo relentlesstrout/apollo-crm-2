@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Actions\Properties;
 
+use App\Actions\Customers\RecomputeCustomerStatusAction;
 use App\Actions\Properties\CreatePropertyAction;
 use App\DTOs\Property\PropertyData;
 use App\Enums\PropertyStatus;
@@ -19,7 +20,7 @@ class CreatePropertyActionTest extends TestCase
     {
         parent::setUp();
 
-        $this->action = new CreatePropertyAction;
+        $this->action = new CreatePropertyAction(new RecomputeCustomerStatusAction);
     }
 
     public function test_it_creates_a_property_for_a_customer(): void

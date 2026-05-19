@@ -65,7 +65,7 @@
                                 </button>
                             </form>
                             <form method="POST" action="{{ route('properties.status', $property) }}"
-                                  onsubmit="return confirm('Cancel this property? This cannot be undone easily.')">
+                                  onsubmit="return confirm('Cancel this property?')">
                                 @csrf
                                 <input type="hidden" name="status" value="cancelled">
                                 <button type="submit"
@@ -84,7 +84,7 @@
                                 </button>
                             </form>
                             <form method="POST" action="{{ route('properties.status', $property) }}"
-                                  onsubmit="return confirm('Cancel this property? This cannot be undone easily.')">
+                                  onsubmit="return confirm('Cancel this property?')">
                                 @csrf
                                 <input type="hidden" name="status" value="cancelled">
                                 <button type="submit"
