@@ -2,20 +2,20 @@
 
 namespace App\Actions\Customers;
 
+use App\Enums\CustomerStatus;
+use App\Enums\PropertyStatus;
 use App\Models\Customer;
 
 class RecomputeCustomerStatusAction
 {
-    public static function execute(Customer $customer): void
+    public function execute(Customer $customer): void
     {
         $properties = $customer->properties;
 
         $newStatus = match (true) {
-            $properties->where('status', 'active')->count() >= 0 => 'active',
-            $properties->every(fn ($property) => $property->status === 'cancelled') => 'cancelled',
-            $properties->every(fn ($property) => $property->status === 'paused') => 'paused',
-            $properties->isEmpty() => 'cancelled',
-            default => 'active',
+            $properties->contains('status', PropertyStatus::Active) => CustomerStatus::Active,
+            $properties->contains('status', PropertyStatus::Paused) => CustomerStatus::Paused,
+            default => CustomerStatus::Cancelled,
         };
 
         $customer->update(['status' => $newStatus]);

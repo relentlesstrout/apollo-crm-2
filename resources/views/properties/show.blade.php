@@ -55,43 +55,48 @@
                         </a>
 
                         @if ($property->status === \App\Enums\PropertyStatus::Active)
-                            <form method="POST" action="{{ route('properties.pause', $property) }}"
+                            <form method="POST" action="{{ route('properties.status', $property) }}"
                                   onsubmit="return confirm('Pause this property?')">
                                 @csrf
+                                <input type="hidden" name="status" value="paused">
                                 <button type="submit"
                                         class="bg-amber-50 hover:bg-amber-100 text-amber-700 text-sm font-medium px-4 py-2 rounded-md border border-amber-200 transition-colors duration-150">
                                     Pause
                                 </button>
                             </form>
-                            <form method="POST" action="{{ route('properties.cancel', $property) }}"
-                                  onsubmit="return confirm('Cancel this property? This cannot be undone easily.')">
+                            <form method="POST" action="{{ route('properties.status', $property) }}"
+                                  onsubmit="return confirm('Cancel this property?')">
                                 @csrf
+                                <input type="hidden" name="status" value="cancelled">
                                 <button type="submit"
                                         class="bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium px-4 py-2 rounded-md border border-red-200 transition-colors duration-150">
                                     Cancel
                                 </button>
                             </form>
                         @elseif ($property->status === \App\Enums\PropertyStatus::Paused)
-                            <form method="POST" action="{{ route('properties.resume', $property) }}"
+                            <form method="POST" action="{{ route('properties.status', $property) }}"
                                   onsubmit="return confirm('Resume this property?')">
                                 @csrf
+                                <input type="hidden" name="status" value="active">
                                 <button type="submit"
                                         class="bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium px-4 py-2 rounded-md border border-green-200 transition-colors duration-150">
                                     Resume
                                 </button>
                             </form>
-                            <form method="POST" action="{{ route('properties.cancel', $property) }}"
-                                  onsubmit="return confirm('Cancel this property? This cannot be undone easily.')">
+                            <form method="POST" action="{{ route('properties.status', $property) }}"
+                                  onsubmit="return confirm('Cancel this property?')">
                                 @csrf
+                                <input type="hidden" name="status" value="cancelled">
                                 <button type="submit"
                                         class="bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium px-4 py-2 rounded-md border border-red-200 transition-colors duration-150">
                                     Cancel
                                 </button>
                             </form>
                         @elseif ($property->status === \App\Enums\PropertyStatus::Cancelled)
-                            <form method="POST" action="{{ route('properties.reactivate', $property) }}"
+                            <form method="POST" action="{{ route('properties.status', $property) }}"
                                   onsubmit="return confirm('Reactivate this property?')">
                                 @csrf
+                                <input type="hidden" name="status" value="active">
                                 <button type="submit"
                                         class="bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium px-4 py-2 rounded-md border border-green-200 transition-colors duration-150">
                                     Reactivate
