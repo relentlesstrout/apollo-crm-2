@@ -45,6 +45,8 @@ class PropertyController extends Controller
 
     public function show(Property $property)
     {
+        $property->load('propertyServices.service');
+
         return view('properties.show', ['property' => $property]);
     }
 

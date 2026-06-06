@@ -155,6 +155,55 @@
             </div>
         </div>
 
+        {{-- Services panel --}}
+        <div class="bg-white rounded-md border border-slate-200 overflow-hidden mb-4">
+            <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-slate-700">Services</h2>
+                <a href="{{ route('properties.property-services.create', $property) }}"
+                   class="bg-sky-500 hover:bg-sky-600 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors duration-150">
+                    Add Service
+                </a>
+            </div>
+
+            @if ($property->propertyServices->isEmpty())
+                <p class="px-6 py-4 text-sm text-slate-500">No services added yet.</p>
+            @else
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-100 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
+                            <th class="px-6 py-3">Service</th>
+                            <th class="px-6 py-3">Price</th>
+                            <th class="px-6 py-3">Effective From</th>
+                            <th class="px-6 py-3">Effective To</th>
+                            <th class="px-6 py-3"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach ($property->propertyServices as $propertyService)
+                            <tr class="hover:bg-slate-50 transition-colors duration-100">
+                                <td class="px-6 py-3 font-medium text-slate-800">{{ $propertyService->service->name }}</td>
+                                <td class="px-6 py-3 text-slate-700">£{{ number_format($propertyService->price / 100, 2) }}</td>
+                                <td class="px-6 py-3 text-slate-500">{{ $propertyService->effective_from->format('d M Y') }}</td>
+                                <td class="px-6 py-3 text-slate-500">{{ $propertyService->effective_to?->format('d M Y') ?? 'Ongoing' }}</td>
+                                <td class="px-6 py-3 text-right">
+                                    <div class="flex items-center justify-end gap-3">
+                                        <a href="{{ route('property-services.edit', $propertyService) }}"
+                                           class="text-sky-600 hover:text-sky-800 font-medium">Edit</a>
+                                        <form method="POST" action="{{ route('property-services.destroy', $propertyService) }}"
+                                              onsubmit="return confirm('Remove this service from the property?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500 hover:text-red-700 font-medium">Remove</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+
         {{-- Notes card --}}
         @if ($property->notes)
             <div class="bg-white rounded-md border border-slate-200 overflow-hidden">
