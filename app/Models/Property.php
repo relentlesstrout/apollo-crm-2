@@ -67,4 +67,9 @@ class Property extends Model
     {
         return $this->hasMany(PropertyService::class);
     }
+
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(Schedule::class);
+    }
 }
