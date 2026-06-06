@@ -19,8 +19,6 @@ class CustomerSeeder extends Seeder
         ]);
 
         Customer::factory()->count(10)->create();
-        Customer::factory()->count(3)->paused()->create();
-        Customer::factory()->count(3)->cancelled()->create();
         Customer::factory()->count(3)->withPortalAccess()->create();
     }
 }
