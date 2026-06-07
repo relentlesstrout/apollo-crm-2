@@ -7,6 +7,7 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\PropertyServiceController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +48,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('properties/{property}/status', [PropertyController::class, 'status'])->name('properties.status');
 
     Route::resource('properties.property-services', PropertyServiceController::class)
+        ->shallow()
+        ->only(['create', 'store', 'edit', 'update', 'destroy']);
+
+    Route::resource('properties.schedules', ScheduleController::class)
         ->shallow()
         ->only(['create', 'store', 'edit', 'update', 'destroy']);
 });
