@@ -72,4 +72,9 @@ class Property extends Model
     {
         return $this->hasMany(Schedule::class);
     }
+
+    public function cleaningJobs(): HasMany
+    {
+        return $this->hasMany(CleaningJob::class);
+    }
 }

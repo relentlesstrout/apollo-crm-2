@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CleaningJobController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\LoginController;
@@ -54,4 +55,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('properties.schedules', ScheduleController::class)
         ->shallow()
         ->only(['create', 'store', 'edit', 'update', 'destroy']);
+
+    Route::get('/cleaning-jobs', [CleaningJobController::class, 'index'])->name('cleaning-jobs.index');
+    Route::resource('properties.cleaning-jobs', CleaningJobController::class)
+        ->shallow()
+        ->only(['create', 'store', 'show', 'edit', 'update']);
+    Route::post('cleaning-jobs/{cleaningJob}/status', [CleaningJobController::class, 'status'])->name('cleaning-jobs.status');
 });
