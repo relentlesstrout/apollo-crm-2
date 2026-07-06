@@ -60,6 +60,7 @@ class CleaningJob extends Model
     public function services(): BelongsToMany
     {
         return $this->belongsToMany(Service::class)
+            ->withTrashed()
             ->withPivot(['price', 'actual_price'])
             ->withTimestamps();
     }
