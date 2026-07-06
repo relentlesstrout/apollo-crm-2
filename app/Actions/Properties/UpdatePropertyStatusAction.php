@@ -4,6 +4,7 @@ namespace App\Actions\Properties;
 
 use App\Actions\Customers\RecomputeCustomerStatusAction;
 use App\Enums\PropertyStatus;
+use App\Events\PropertyCancelled;
 use App\Models\Property;
 
 class UpdatePropertyStatusAction
@@ -14,5 +15,9 @@ class UpdatePropertyStatusAction
     {
         $property->update(['status' => $newStatus]);
         $this->recomputeStatus->execute($property->customer);
+
+        if ($newStatus === PropertyStatus::Cancelled) {
+            PropertyCancelled::dispatch($property);
+        }
     }
 }

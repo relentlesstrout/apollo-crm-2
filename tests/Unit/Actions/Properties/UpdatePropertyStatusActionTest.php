@@ -6,9 +6,11 @@ use App\Actions\Customers\RecomputeCustomerStatusAction;
 use App\Actions\Properties\UpdatePropertyStatusAction;
 use App\Enums\CustomerStatus;
 use App\Enums\PropertyStatus;
+use App\Events\PropertyCancelled;
 use App\Models\Customer;
 use App\Models\Property;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class UpdatePropertyStatusActionTest extends TestCase
@@ -89,5 +91,35 @@ class UpdatePropertyStatusActionTest extends TestCase
         $this->action->execute($property, PropertyStatus::Cancelled);
 
         $this->assertEquals(CustomerStatus::Cancelled, $customer->fresh()->status);
+    }
+
+    public function test_it_dispatches_property_cancelled_event_when_status_is_cancelled(): void
+    {
+        Event::fake();
+        $property = Property::factory()->create();
+
+        $this->action->execute($property, PropertyStatus::Cancelled);
+
+        Event::assertDispatched(PropertyCancelled::class, fn (PropertyCancelled $event) => $event->property->is($property));
+    }
+
+    public function test_it_does_not_dispatch_property_cancelled_event_when_paused(): void
+    {
+        Event::fake();
+        $property = Property::factory()->create();
+
+        $this->action->execute($property, PropertyStatus::Paused);
+
+        Event::assertNotDispatched(PropertyCancelled::class);
+    }
+
+    public function test_it_does_not_dispatch_property_cancelled_event_when_reactivated(): void
+    {
+        Event::fake();
+        $property = Property::factory()->cancelled()->create();
+
+        $this->action->execute($property, PropertyStatus::Active);
+
+        Event::assertNotDispatched(PropertyCancelled::class);
     }
 }

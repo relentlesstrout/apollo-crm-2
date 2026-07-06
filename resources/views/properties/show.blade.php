@@ -204,6 +204,121 @@
             @endif
         </div>
 
+        {{-- Schedules panel --}}
+        <div class="bg-white rounded-md border border-slate-200 overflow-hidden mb-4">
+            <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-slate-700">Schedules</h2>
+                <a href="{{ route('properties.schedules.create', $property) }}"
+                   class="bg-sky-500 hover:bg-sky-600 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors duration-150">
+                    Add Schedule
+                </a>
+            </div>
+
+            @if ($property->schedules->isEmpty())
+                <p class="px-6 py-4 text-sm text-slate-500">No schedules added yet.</p>
+            @else
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-100 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
+                            <th class="px-6 py-3">Service</th>
+                            <th class="px-6 py-3">Frequency</th>
+                            <th class="px-6 py-3">Status</th>
+                            <th class="px-6 py-3">Next Due</th>
+                            <th class="px-6 py-3"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach ($property->schedules as $schedule)
+                            <tr class="hover:bg-slate-50 transition-colors duration-100">
+                                <td class="px-6 py-3 font-medium text-slate-800">{{ $schedule->service->name }}</td>
+                                <td class="px-6 py-3 text-slate-700">
+                                    {{ $schedule->frequency_weeks === 1 ? 'Every week' : 'Every ' . $schedule->frequency_weeks . ' weeks' }}
+                                </td>
+                                <td class="px-6 py-3">
+                                    @if ($schedule->active_at)
+                                        <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
+                                            Active
+                                        </span>
+                                    @else
+                                        <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                                            Inactive
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-3 {{ $schedule->next_due_at->isPast() ? 'text-red-600 font-medium' : 'text-slate-500' }}">
+                                    {{ $schedule->next_due_at->format('d M Y') }}
+                                    @if ($schedule->next_due_at->isPast())
+                                        <span class="text-xs">(overdue)</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-3 text-right">
+                                    <div class="flex items-center justify-end gap-3">
+                                        <a href="{{ route('schedules.edit', $schedule) }}"
+                                           class="text-sky-600 hover:text-sky-800 font-medium">Edit</a>
+                                        <form method="POST" action="{{ route('schedules.destroy', $schedule) }}"
+                                              onsubmit="return confirm('Remove this schedule?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500 hover:text-red-700 font-medium">Remove</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+
+        {{-- Cleaning Jobs panel --}}
+        <div class="bg-white rounded-md border border-slate-200 overflow-hidden mb-4">
+            <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-slate-700">Cleaning Jobs</h2>
+                <a href="{{ route('properties.cleaning-jobs.create', $property) }}"
+                   class="bg-sky-500 hover:bg-sky-600 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors duration-150">
+                    Add Cleaning Job
+                </a>
+            </div>
+
+            @if ($property->cleaningJobs->isEmpty())
+                <p class="px-6 py-4 text-sm text-slate-500">No cleaning jobs yet.</p>
+            @else
+                @php
+                    $jobStatusColours = [
+                        'scheduled'   => 'bg-sky-100 text-sky-700 border border-sky-200',
+                        'in_progress' => 'bg-amber-100 text-amber-700 border border-amber-200',
+                        'completed'   => 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+                        'cancelled'   => 'bg-red-100 text-red-700 border border-red-200',
+                    ];
+                @endphp
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-100 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
+                            <th class="px-6 py-3">Scheduled</th>
+                            <th class="px-6 py-3">Status</th>
+                            <th class="px-6 py-3"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach ($property->cleaningJobs->sortByDesc('scheduled_at') as $job)
+                            <tr class="hover:bg-slate-50 transition-colors duration-100">
+                                <td class="px-6 py-3 font-medium text-slate-800">{{ $job->scheduled_at->format('d M Y') }}</td>
+                                <td class="px-6 py-3">
+                                    <span class="text-xs font-medium px-2.5 py-0.5 rounded-full {{ $jobStatusColours[$job->status->value] }}">
+                                        {{ $job->status->label() }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-3 text-right">
+                                    <a href="{{ route('cleaning-jobs.show', $job) }}"
+                                       class="text-sky-600 hover:text-sky-800 font-medium">View</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+
         {{-- Notes card --}}
         @if ($property->notes)
             <div class="bg-white rounded-md border border-slate-200 overflow-hidden">
