@@ -5,6 +5,7 @@ namespace App\Actions\CleaningJobs;
 use App\Enums\CleaningJobStatus;
 use App\Models\CleaningJob;
 use App\Models\Schedule;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class UpdateCleaningJobStatusAction
@@ -27,27 +28,33 @@ class UpdateCleaningJobStatusAction
 
             $cleaningJob->update($attributes);
 
-            $isNowResolved = in_array($newStatus, [CleaningJobStatus::Completed, CleaningJobStatus::Cancelled], true);
+            if ($previousStatus === $newStatus) {
+                return;
+            }
 
-            if ($previousStatus !== $newStatus && $isNowResolved) {
-                $this->advanceContributingSchedules($cleaningJob);
+            if ($newStatus === CleaningJobStatus::Completed) {
+                // Work happened today, so the next visit is a full frequency from now.
+                $this->advanceContributingSchedules($cleaningJob, now());
+            } elseif ($newStatus === CleaningJobStatus::Cancelled) {
+                // Visit was skipped: keep the cadence rolling from the scheduled date,
+                // never resetting the clock to today.
+                $this->advanceContributingSchedules($cleaningJob, $cleaningJob->scheduled_at);
             }
         });
     }
 
     /**
-     * Overwrite next_due_at on each active schedule linked to the job so the
-     * next visit falls a full frequency after the completion/cancellation date,
-     * never after the date it was originally due.
+     * Overwrite next_due_at on each active schedule linked to the job to a full
+     * frequency after the given anchor date.
      */
-    private function advanceContributingSchedules(CleaningJob $cleaningJob): void
+    private function advanceContributingSchedules(CleaningJob $cleaningJob, Carbon $from): void
     {
         $cleaningJob->schedules()
             ->whereNotNull('active_at')
             ->get()
-            ->each(function (Schedule $schedule): void {
+            ->each(function (Schedule $schedule) use ($from): void {
                 $schedule->update([
-                    'next_due_at' => now()->addWeeks($schedule->frequency_weeks),
+                    'next_due_at' => $from->copy()->addWeeks($schedule->frequency_weeks),
                 ]);
             });
     }

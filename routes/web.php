@@ -61,4 +61,5 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->shallow()
         ->only(['create', 'store', 'show', 'edit', 'update']);
     Route::post('cleaning-jobs/{cleaningJob}/status', [CleaningJobController::class, 'status'])->name('cleaning-jobs.status');
+    Route::post('cleaning-jobs/{cleaningJob}/reschedule', [CleaningJobController::class, 'reschedule'])->name('cleaning-jobs.reschedule');
 });

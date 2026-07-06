@@ -88,15 +88,15 @@ class UpdateCleaningJobStatusActionTest extends TestCase
         );
     }
 
-    public function test_cancelling_a_job_advances_linked_active_schedules_from_today(): void
+    public function test_cancelling_a_job_advances_schedules_from_the_scheduled_date_not_today(): void
     {
-        $job = CleaningJob::factory()->create();
+        $job = CleaningJob::factory()->create(['scheduled_at' => Carbon::parse('2026-07-01')]);
         $schedule = $this->linkedSchedule($job, frequencyWeeks: 2, nextDueAt: Carbon::today());
 
         $this->action->execute($job, CleaningJobStatus::Cancelled);
 
         $this->assertEquals(
-            Carbon::today()->addWeeks(2)->toDateString(),
+            Carbon::parse('2026-07-01')->addWeeks(2)->toDateString(),
             $schedule->fresh()->next_due_at->toDateString(),
         );
     }

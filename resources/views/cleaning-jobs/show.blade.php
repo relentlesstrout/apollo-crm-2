@@ -91,17 +91,39 @@
                                     Cancel
                                 </button>
                             </form>
-                        @elseif ($cleaningJob->status === \App\Enums\CleaningJobStatus::Cancelled)
-                            <form method="POST" action="{{ route('cleaning-jobs.status', $cleaningJob) }}"
-                                  onsubmit="return confirm('Reschedule this job?')">
-                                @csrf
-                                <input type="hidden" name="status" value="scheduled">
-                                <button type="submit"
+                        @endif
+
+                        @if (in_array($cleaningJob->status, [\App\Enums\CleaningJobStatus::Scheduled, \App\Enums\CleaningJobStatus::Cancelled]))
+                            <div x-data="{ open: false }" class="relative">
+                                <button type="button" @click="open = ! open"
                                         class="bg-sky-50 hover:bg-sky-100 text-sky-700 text-sm font-medium px-4 py-2 rounded-md border border-sky-200 transition-colors duration-150">
                                     Reschedule
                                 </button>
-                            </form>
+                                <div x-show="open" x-cloak @click.outside="open = false" style="display: none;"
+                                     class="absolute left-0 z-10 mt-2 w-64 rounded-md border border-slate-200 bg-white p-3 shadow-lg">
+                                    <form method="POST" action="{{ route('cleaning-jobs.reschedule', $cleaningJob) }}">
+                                        @csrf
+                                        <label for="reschedule_date" class="block text-xs font-medium text-slate-500 mb-1">New date</label>
+                                        <input
+                                            type="date"
+                                            id="reschedule_date"
+                                            name="scheduled_at"
+                                            value="{{ $cleaningJob->scheduled_at->max(now())->format('Y-m-d') }}"
+                                            min="{{ now()->format('Y-m-d') }}"
+                                            class="w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                                        />
+                                        <button type="submit"
+                                                class="mt-2 w-full bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium px-3 py-1.5 rounded-md transition-colors duration-150">
+                                            Save
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         @endif
+
+                        @error('scheduled_at')
+                            <p class="w-full text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
             </div>
