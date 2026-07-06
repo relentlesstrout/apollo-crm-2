@@ -177,6 +177,44 @@ class CleaningJobControllerTest extends TestCase
         $this->assertNotNull($job->started_at);
     }
 
+    public function test_admin_can_reschedule_a_job_to_a_new_date(): void
+    {
+        $job = CleaningJob::factory()->cancelled()->create(['scheduled_at' => now()->subWeek()]);
+
+        $response = $this->actingAs($this->admin())->post(
+            route('cleaning-jobs.reschedule', $job),
+            ['scheduled_at' => now()->addWeek()->toDateString()],
+        );
+
+        $response->assertRedirect(route('cleaning-jobs.show', $job));
+        $job->refresh();
+        $this->assertEquals(CleaningJobStatus::Scheduled, $job->status);
+        $this->assertEquals(now()->addWeek()->toDateString(), $job->scheduled_at->toDateString());
+    }
+
+    public function test_reschedule_rejects_a_past_date(): void
+    {
+        $job = CleaningJob::factory()->create();
+
+        $response = $this->actingAs($this->admin())->post(
+            route('cleaning-jobs.reschedule', $job),
+            ['scheduled_at' => now()->subDay()->toDateString()],
+        );
+
+        $response->assertSessionHasErrors('scheduled_at');
+    }
+
+    public function test_non_admin_cannot_reschedule_a_job(): void
+    {
+        $job = CleaningJob::factory()->create();
+        $customer = User::factory()->create(['role' => UserRole::Customer]);
+
+        $this->actingAs($customer)->post(
+            route('cleaning-jobs.reschedule', $job),
+            ['scheduled_at' => now()->addWeek()->toDateString()],
+        )->assertForbidden();
+    }
+
     public function test_index_is_accessible_to_admin(): void
     {
         $this->actingAs($this->admin())

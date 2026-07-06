@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Actions\CleaningJobs\CreateCleaningJobAction;
+use App\Actions\CleaningJobs\RescheduleCleaningJobAction;
 use App\Actions\CleaningJobs\UpdateCleaningJobAction;
 use App\Actions\CleaningJobs\UpdateCleaningJobStatusAction;
 use App\Enums\UserRole;
+use App\Http\Requests\RescheduleCleaningJobRequest;
 use App\Http\Requests\StoreCleaningJobRequest;
 use App\Http\Requests\UpdateCleaningJobRequest;
 use App\Http\Requests\UpdateCleaningJobStatusRequest;
@@ -68,6 +70,13 @@ class CleaningJobController extends Controller
         $action->execute($cleaningJob, $request->status());
 
         return redirect()->route('cleaning-jobs.show', $cleaningJob)->with('success', 'Cleaning job status updated.');
+    }
+
+    public function reschedule(CleaningJob $cleaningJob, RescheduleCleaningJobRequest $request, RescheduleCleaningJobAction $action): RedirectResponse
+    {
+        $action->execute($cleaningJob, $request->scheduledAt());
+
+        return redirect()->route('cleaning-jobs.show', $cleaningJob)->with('success', 'Cleaning job rescheduled.');
     }
 
     /**
