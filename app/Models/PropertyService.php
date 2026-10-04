@@ -6,11 +6,12 @@ use Database\Factories\PropertyServiceFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PropertyService extends Model
 {
     /** @use HasFactory<PropertyServiceFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'property_service';
 
@@ -39,6 +40,6 @@ class PropertyService extends Model
 
     public function service(): BelongsTo
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo(Service::class)->withTrashed();
     }
 }
