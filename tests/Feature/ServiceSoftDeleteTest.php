@@ -85,4 +85,86 @@ class ServiceSoftDeleteTest extends TestCase
 
         $this->assertSoftDeleted($service);
     }
+
+    public function test_archiving_a_service_used_by_an_active_schedule_is_blocked(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $service = Service::factory()->create();
+        Schedule::factory()->create(['service_id' => $service->id]);
+
+        $this->actingAs($admin)
+            ->delete(route('services.destroy', $service))
+            ->assertRedirect(route('services.index'))
+            ->assertSessionHas('error');
+
+        $this->assertNotSoftDeleted($service);
+    }
+
+    public function test_a_service_used_only_by_inactive_schedules_can_be_archived(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $service = Service::factory()->create();
+        Schedule::factory()->inactive()->create(['service_id' => $service->id]);
+
+        $this->actingAs($admin)
+            ->delete(route('services.destroy', $service))
+            ->assertSessionHas('success');
+
+        $this->assertSoftDeleted($service);
+    }
+
+    public function test_the_index_hides_archived_services_by_default(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        Service::factory()->create(['name' => 'Window Clean']);
+        Service::factory()->create(['name' => 'Gutter Clean'])->delete();
+
+        $this->actingAs($admin)
+            ->get(route('services.index'))
+            ->assertOk()
+            ->assertSee('Window Clean')
+            ->assertDontSee('Gutter Clean');
+    }
+
+    public function test_the_archived_toggle_shows_archived_services_with_a_restore_button(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        Service::factory()->create(['name' => 'Window Clean']);
+        $archived = Service::factory()->create(['name' => 'Gutter Clean']);
+        $archived->delete();
+
+        $this->actingAs($admin)
+            ->get(route('services.index', ['archived' => 1]))
+            ->assertOk()
+            ->assertSee('Window Clean')
+            ->assertSee('Gutter Clean')
+            ->assertSee(route('services.restore', $archived));
+    }
+
+    public function test_admin_can_restore_an_archived_service(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $service = Service::factory()->create();
+        $service->delete();
+
+        $this->actingAs($admin)
+            ->post(route('services.restore', $service))
+            ->assertRedirect(route('services.index', ['archived' => 1]))
+            ->assertSessionHas('success');
+
+        $this->assertNotSoftDeleted($service);
+    }
+
+    public function test_a_non_admin_cannot_restore_a_service(): void
+    {
+        $cleaner = User::factory()->create(['role' => UserRole::Cleaner]);
+        $service = Service::factory()->create();
+        $service->delete();
+
+        $this->actingAs($cleaner)
+            ->post(route('services.restore', $service))
+            ->assertForbidden();
+
+        $this->assertSoftDeleted($service);
+    }
 }

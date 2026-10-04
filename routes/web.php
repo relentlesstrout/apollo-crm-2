@@ -37,6 +37,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::resource('users', UserController::class);
     Route::resource('services', ServiceController::class)->except('show');
+    Route::post('services/{service}/restore', [ServiceController::class, 'restore'])->name('services.restore')->withTrashed();
 
     Route::resource('customers', CustomerController::class)->except('destroy');
     Route::post('customers/{customer}/portal', [CustomerController::class, 'grantPortalAccess'])->name('customers.portal.grant');

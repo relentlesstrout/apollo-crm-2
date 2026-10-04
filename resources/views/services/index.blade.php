@@ -12,11 +12,16 @@
             </a>
         </div>
 
-        @if (session('success'))
-            <div class="mb-4 px-4 py-3 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm">
-                {{ session('success') }}
-            </div>
-        @endif
+        <div class="flex justify-end mb-3">
+            <a href="{{ route('services.index', $showArchived ? [] : ['archived' => 1]) }}"
+               class="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900"
+               role="switch" aria-checked="{{ $showArchived ? 'true' : 'false' }}">
+                <span class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-150 {{ $showArchived ? 'bg-sky-500' : 'bg-slate-300' }}">
+                    <span class="inline-block h-4 w-4 rounded-full bg-white shadow transition-transform duration-150 {{ $showArchived ? 'translate-x-4' : 'translate-x-0.5' }}"></span>
+                </span>
+                Show archived services
+            </a>
+        </div>
 
         <div class="bg-white rounded-md border border-slate-200 overflow-hidden">
             @if ($services->isEmpty())
@@ -34,21 +39,35 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @foreach ($services as $service)
-                            <tr class="hover:bg-slate-50 transition-colors duration-100">
-                                <td class="px-6 py-4 font-medium text-slate-800">{{ $service->name }}</td>
+                            <tr class="hover:bg-slate-50 transition-colors duration-100 {{ $service->trashed() ? 'bg-slate-50/60' : '' }}">
+                                <td class="px-6 py-4 font-medium {{ $service->trashed() ? 'text-slate-400' : 'text-slate-800' }}">
+                                    {{ $service->name }}
+                                    @if ($service->trashed())
+                                        <span class="ml-2 text-xs font-medium px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">Archived</span>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4 text-slate-500">{{ $service->description ?? '—' }}</td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-3">
-                                        <a href="{{ route('services.edit', $service) }}"
-                                           class="text-sky-600 hover:text-sky-800 font-medium">Edit</a>
-                                        <form method="POST" action="{{ route('services.destroy', $service) }}"
-                                              onsubmit="return confirm('Delete this service?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-700 font-medium">
-                                                Delete
-                                            </button>
-                                        </form>
+                                        @if ($service->trashed())
+                                            <form method="POST" action="{{ route('services.restore', $service) }}">
+                                                @csrf
+                                                <button type="submit" class="text-sky-600 hover:text-sky-800 font-medium">
+                                                    Restore
+                                                </button>
+                                            </form>
+                                        @else
+                                            <a href="{{ route('services.edit', $service) }}"
+                                               class="text-sky-600 hover:text-sky-800 font-medium">Edit</a>
+                                            <form method="POST" action="{{ route('services.destroy', $service) }}"
+                                                  onsubmit="return confirm('Archive this service? It will no longer be offered for new prices or schedules. Past jobs keep it.')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-500 hover:text-red-700 font-medium">
+                                                    Archive
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

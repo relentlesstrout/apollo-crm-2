@@ -22,4 +22,17 @@ class Service extends Model
     {
         return $this->hasMany(PropertyService::class);
     }
+
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(Schedule::class);
+    }
+
+    /**
+     * Whether any switched-on schedule still uses this service.
+     */
+    public function hasActiveSchedules(): bool
+    {
+        return $this->schedules()->whereNotNull('active_at')->exists();
+    }
 }

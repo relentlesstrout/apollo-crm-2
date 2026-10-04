@@ -7,15 +7,25 @@ use App\Actions\Services\UpdateServiceAction;
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 use App\Models\Service;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $services = Service::orderBy('name')->get();
+        $showArchived = $request->boolean('archived');
 
-        return view('services.index', ['services' => $services]);
+        $services = Service::query()
+            ->when($showArchived, fn (Builder $query) => $query->withTrashed())
+            ->orderBy('name')
+            ->get();
+
+        return view('services.index', [
+            'services' => $services,
+            'showArchived' => $showArchived,
+        ]);
     }
 
     public function create()
@@ -44,8 +54,20 @@ class ServiceController extends Controller
 
     public function destroy(Service $service): RedirectResponse
     {
+        if ($service->hasActiveSchedules()) {
+            return redirect()->route('services.index')
+                ->with('error', "\"{$service->name}\" is used by active schedules. Switch those schedules off before you archive it.");
+        }
+
         $service->delete();
 
-        return redirect()->route('services.index')->with('success', 'Service deleted.');
+        return redirect()->route('services.index')->with('success', 'Service archived.');
+    }
+
+    public function restore(Service $service): RedirectResponse
+    {
+        $service->restore();
+
+        return redirect()->route('services.index', ['archived' => 1])->with('success', 'Service restored.');
     }
 }
