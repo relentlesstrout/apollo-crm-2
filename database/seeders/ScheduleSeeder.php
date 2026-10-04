@@ -14,7 +14,7 @@ class ScheduleSeeder extends Seeder
      */
     public function run(): void
     {
-        PropertyService::with(['property', 'service'])->get()->each(function (PropertyService $propertyService) use ($state) {
+        PropertyService::with(['property', 'service'])->get()->each(function (PropertyService $propertyService) {
 
             $state = fake()->randomElement(['overdue', 'dueToday', 'dueSoon']);
 
