@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\UserRole;
 use App\Models\CleaningJob;
+use App\Models\PropertyService;
 use App\Models\Schedule;
 use App\Models\Service;
 use App\Models\User;
@@ -86,31 +87,31 @@ class ServiceSoftDeleteTest extends TestCase
         $this->assertSoftDeleted($service);
     }
 
-    public function test_archiving_a_service_used_by_an_active_schedule_is_blocked(): void
+    public function test_archiving_a_service_used_by_an_active_schedule_switches_the_schedule_off(): void
     {
         $admin = User::factory()->create(['role' => UserRole::Admin]);
         $service = Service::factory()->create();
-        Schedule::factory()->create(['service_id' => $service->id]);
+        $schedule = Schedule::factory()->create(['service_id' => $service->id]);
 
         $this->actingAs($admin)
             ->delete(route('services.destroy', $service))
             ->assertRedirect(route('services.index'))
-            ->assertSessionHas('error');
-
-        $this->assertNotSoftDeleted($service);
-    }
-
-    public function test_a_service_used_only_by_inactive_schedules_can_be_archived(): void
-    {
-        $admin = User::factory()->create(['role' => UserRole::Admin]);
-        $service = Service::factory()->create();
-        Schedule::factory()->inactive()->create(['service_id' => $service->id]);
-
-        $this->actingAs($admin)
-            ->delete(route('services.destroy', $service))
             ->assertSessionHas('success');
 
         $this->assertSoftDeleted($service);
+        $this->assertNull($schedule->fresh()->active_at);
+    }
+
+    public function test_removing_a_property_price_soft_deletes_it(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $propertyService = PropertyService::factory()->create();
+
+        $this->actingAs($admin)
+            ->delete(route('property-services.destroy', $propertyService))
+            ->assertRedirect(route('properties.show', $propertyService->property));
+
+        $this->assertSoftDeleted($propertyService);
     }
 
     public function test_the_index_hides_archived_services_by_default(): void

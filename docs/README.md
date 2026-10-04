@@ -83,7 +83,8 @@ A holiday or building work is not a Pause. Cancel the one job instead.
 | Topic | Decision |
 |---|---|
 | Price change | A **Change price** action closes the old row (`effective_to` = the day before) and adds a new row. **Edit** is for corrections only. Overlapping date ranges are blocked. |
-| Delete a service | It becomes **Archive** (soft delete). You cannot archive a service while active schedules use it. All history stays. |
+| Delete a service | It becomes **Archive** (soft delete). The archive cascades: the service's prices are soft deleted, its schedules are switched off, and it is removed from open jobs (a job left with no services is cancelled). Completed and cancelled jobs do not change. **Restore** brings back the service and the prices archived with it. The schedules stay off. |
+| Remove a price row | It is a **soft delete**. The price history stays in the database. |
 
 ### Job workflow and cleaner access
 

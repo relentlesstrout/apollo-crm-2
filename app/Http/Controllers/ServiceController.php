@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Services\ArchiveServiceAction;
 use App\Actions\Services\CreateServiceAction;
+use App\Actions\Services\RestoreServiceAction;
 use App\Actions\Services\UpdateServiceAction;
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
@@ -52,22 +54,28 @@ class ServiceController extends Controller
         return redirect()->route('services.index')->with('success', 'Service updated successfully.');
     }
 
-    public function destroy(Service $service): RedirectResponse
+    public function destroy(Service $service, ArchiveServiceAction $action): RedirectResponse
     {
-        if ($service->hasActiveSchedules()) {
-            return redirect()->route('services.index')
-                ->with('error', "\"{$service->name}\" is used by active schedules. Switch those schedules off before you archive it.");
-        }
+        $result = $action->execute($service);
 
-        $service->delete();
-
-        return redirect()->route('services.index')->with('success', 'Service archived.');
+        return redirect()->route('services.index')->with('success', sprintf(
+            '"%s" archived. %d price(s) archived, %d schedule(s) switched off, %d open job(s) updated, %d open job(s) cancelled.',
+            $service->name,
+            $result['prices'],
+            $result['schedules'],
+            $result['jobsUpdated'],
+            $result['jobsCancelled'],
+        ));
     }
 
-    public function restore(Service $service): RedirectResponse
+    public function restore(Service $service, RestoreServiceAction $action): RedirectResponse
     {
-        $service->restore();
+        $prices = $action->execute($service);
 
-        return redirect()->route('services.index', ['archived' => 1])->with('success', 'Service restored.');
+        return redirect()->route('services.index', ['archived' => 1])->with('success', sprintf(
+            '"%s" restored with %d price(s). Its schedules are still switched off: switch them on again on each property.',
+            $service->name,
+            $prices,
+        ));
     }
 }

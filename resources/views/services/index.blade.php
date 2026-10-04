@@ -60,7 +60,7 @@
                                             <a href="{{ route('services.edit', $service) }}"
                                                class="text-sky-600 hover:text-sky-800 font-medium">Edit</a>
                                             <form method="POST" action="{{ route('services.destroy', $service) }}"
-                                                  onsubmit="return confirm('Archive this service? It will no longer be offered for new prices or schedules. Past jobs keep it.')">
+                                                  onsubmit="return confirm('Archive this service? Its prices at every property are archived, its schedules are switched off, and it is removed from open jobs. Completed jobs keep it. You can restore it later.')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-500 hover:text-red-700 font-medium">

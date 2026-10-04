@@ -17,6 +17,7 @@ Table: `services`. Model: `App\Models\Service`.
 |---|---|---|
 | `name` | string | Required. |
 | `description` | text, nullable | Optional. |
+| `deleted_at` | timestamp, nullable | Set when the service is archived (soft delete). Archived services do not show in lists or pickers. |
 
 ### Property services (prices)
 
@@ -30,6 +31,7 @@ Table: `property_service`. Model: `App\Models\PropertyService`.
 | `description` | text, nullable | Optional. For example "front and back, not the extension". |
 | `effective_from` | date | Required. The first date that this price applies. |
 | `effective_to` | date, nullable | Optional. The last date that this price applies. Empty means "no end date". |
+| `deleted_at` | timestamp, nullable | Set when the price row is removed, or when its service is archived (soft delete). Removed rows do not show and are not used for prices. |
 
 Relationships:
 
@@ -47,7 +49,8 @@ Relationships:
 | Save new service | `services.store` | `POST /services` |
 | Edit form | `services.edit` | `GET /services/{service}/edit` |
 | Save changes | `services.update` | `PUT /services/{service}` |
-| Delete | `services.destroy` | `DELETE /services/{service}` |
+| Archive | `services.destroy` | `DELETE /services/{service}` |
+| Restore | `services.restore` | `POST /services/{service}/restore` |
 
 ### Property services
 
@@ -69,7 +72,27 @@ These routes are shallow. The create and save routes are under the property URL.
 2. The list shows all services in name order, with edit and delete buttons.
 3. `StoreServiceRequest` or `UpdateServiceRequest` validates the name and description.
 4. `CreateServiceAction` or `UpdateServiceAction` saves the service.
-5. The delete button deletes the service immediately. See [Planned changes](#planned-changes), item 1.
+5. The **Show archived services** toggle (`?archived=1`) adds archived services to the list, with an **Archived** badge and a **Restore** button.
+
+### Archive a service
+
+The **Archive** button runs `ArchiveServiceAction` in one database transaction:
+
+1. It soft deletes the service.
+2. It soft deletes every price row (`property_service`) for the service, at every property. The rows get **the same `deleted_at` value as the service**, so a restore can find them.
+3. It switches off every schedule for the service (`active_at = null`).
+4. It removes the service from each **open** (Scheduled or In Progress) job. If a job has no services left, the job is cancelled. These cancels do not move any schedule.
+5. Completed and cancelled jobs do not change. They keep the service and its price as history.
+
+The success message shows how many prices, schedules and jobs changed.
+
+### Restore a service
+
+The **Restore** button runs `RestoreServiceAction` in one transaction:
+
+1. It restores the price rows whose `deleted_at` is the same as the service's `deleted_at`. These are the rows that the archive removed. A price row that you removed on its own before the archive stays removed.
+2. It restores the service.
+3. The schedules **stay switched off**. Switch each one on again on the property page, so that you check the date and the price first.
 
 ### Add a price to a property
 
@@ -85,7 +108,7 @@ These routes are shallow. The create and save routes are under the property URL.
 ### Edit or remove a price
 
 - **Edit**: `UpdatePropertyServiceAction` overwrites all the fields of the row.
-- **Remove**: the controller deletes the row. The schedules and past jobs do not change.
+- **Remove**: the controller soft deletes the row. The row is kept in the database with `deleted_at` set, but the app does not show it or use it for prices. The schedules and past jobs do not change. There is no restore button for one price row yet.
 
 ### How the app chooses a price
 
@@ -123,7 +146,7 @@ The decisions for these items are in [Decisions](../README.md#decisions). Each t
 
 | # | Current problem | Decision | Ticket |
 |---|---|---|---|
-| 1 | **Delete a service also deletes its history.** | **Delete** becomes **Archive** (soft delete). You cannot archive a service while active schedules use it. Archived services do not show in the pickers. All history stays. | [#14](https://github.com/relentlesstrout/apollo-crm-2/issues/14) |
+| 1 | **Delete a service also deletes its history.** | **Done in [PR #33](https://github.com/relentlesstrout/apollo-crm-2/pull/33).** **Archive** (soft delete) cascades: prices are archived, schedules are switched off, and the service is removed from open jobs. **Restore** brings back the archived prices. All history stays. | [#14](https://github.com/relentlesstrout/apollo-crm-2/issues/14) |
 | 2 | **Edit** overwrites the price row, so the old price is lost. | A new **Change price** action sets `effective_to` on the old row to the day before the new start date, and adds a new row. **Edit** is for corrections only. | [#21](https://github.com/relentlesstrout/apollo-crm-2/issues/21) |
 | 3 | The app does not check for date ranges that overlap. | Block overlapping date ranges on create, edit and change. | [#21](https://github.com/relentlesstrout/apollo-crm-2/issues/21) |
 | 4 | A schedule can exist with no price, and the generator leaves the service out with no warning. | You cannot create a schedule or switch it on unless a price applies. If a price has ended when the generator runs, the job gets the last known price and a **"price needs review"** flag. | [#18](https://github.com/relentlesstrout/apollo-crm-2/issues/18), [#24](https://github.com/relentlesstrout/apollo-crm-2/issues/24) |
